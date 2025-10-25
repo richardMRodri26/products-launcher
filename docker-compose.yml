@@ -1,18 +1,19 @@
-version: '3'
-
 services: 
 
   nats-server:
     image: nats:latest
     ports:
       - "8222:8222"
+
   client-gateway:
     build: ./client-gateway
     ports:
       - "${CLIENT_GATEWAY_PORT}:3000"
     volumes:
       - ./client-gateway/src:/usr/src/app/src
-    command: pnpm run start:dev
+      - ./client-gateway/prisma:/usr/src/app/prisma
+      - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
+    command: pnpm run start:dev --watch --watchOptions.poll=1000
     environment:
       - PORT=3000
       - NATS_SERVERS=nats://nats-server:4222
@@ -23,7 +24,9 @@ services:
       - "3001:3001"
     volumes:
       - ./products-ms/src:/usr/src/app/src
-    command: pnpm run start:dev
+      - ./products-ms/prisma:/usr/src/app/prisma
+      - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
+    command: pnpm run start:dev --watch --watchOptions.poll=1000
     environment:
       - PORT=3001
       - NATS_SERVERS=nats://nats-server:4222
@@ -35,7 +38,9 @@ services:
     build: ./orders-microservices
     volumes:
       - ./orders-microservices/src:/usr/src/app/src
-    command: pnpm run start:dev
+      - ./orders-microservices/prisma:/usr/src/app/prisma
+      - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
+    command: pnpm run start:dev --watch --watchOptions.poll=1000
     environment:
       - PORT=3002
       - NATS_SERVERS=nats://nats-server:4222
@@ -62,7 +67,8 @@ services:
     build: ./payments-ms
     volumes:
       - ./payments-ms/src:/usr/src/app/src
-    command: pnpm run start:dev
+      - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
+    command: pnpm run start:dev --watch --watchOptions.poll=1000
     ports: 
       - "${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}"
     environment:
