@@ -1,0 +1,87 @@
+services: 
+
+  nats-server:
+    image: nats:latest
+
+  client-gateway:
+    build: 
+      context: ./client-gateway
+      dockerfile: dockerfile.prod
+    image: client-gateway-prod
+    ports:
+      -${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=nats://nats-server:4222
+
+#   auth-ms:
+#     build: ./auth-ms
+#     volumes:
+#       - ./auth-ms/src:/usr/src/app/src
+#     command: pnpm run start:dev --watch --watchOptions.poll=1000
+#     environment:
+#       - PORT=3000
+#       - NATS_SERVERS=nats://nats-server:4222  
+#       - DATABASE_URL=${AUTH_DATABASE_URL}
+#       - JWT_SECRET=${JWT_SECRET}
+
+#   products-ms:
+#     build: ./products-ms
+#     ports:
+#       - "3001:3001"
+#     volumes:
+#       - ./products-ms/src:/usr/src/app/src
+#       - ./products-ms/prisma:/usr/src/app/prisma
+#       - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
+#     command: pnpm run start:dev --watch --watchOptions.poll=1000
+#     environment:
+#       - PORT=3001
+#       - NATS_SERVERS=nats://nats-server:4222
+#       - DATABASE_URL=file:./dev.db
+
+#   orders-ms:
+#     depends_on:
+#       - orders-db
+#     build: ./orders-microservices
+#     volumes:
+#       - ./orders-microservices/src:/usr/src/app/src
+#       - ./orders-microservices/prisma:/usr/src/app/prisma
+#       - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
+#     command: pnpm run start:dev --watch --watchOptions.poll=1000
+#     environment:
+#       - PORT=3002
+#       - NATS_SERVERS=nats://nats-server:4222
+#       - DATABASE_URL=postgresql://postgres:123456@orders-db:5432/ordersdb
+
+#   orders-db:
+#     container_name: orders-database
+#     image: postgres:16.2
+#     restart: always
+#     volumes:
+#       - ./orders-microservices/postgres:/var/lib/postgresql/data
+#     ports:
+#       - 5432:5432
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=123456
+#       - POSTGRES_DB=ordersdb
+
+# # ==============
+# # Payments Microservice
+# # ==============
+#   payments-ms:
+#     container_name: payments-ms
+#     build: ./payments-ms
+#     volumes:
+#       - ./payments-ms/src:/usr/src/app/src
+#       - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
+#     command: pnpm run start:dev --watch --watchOptions.poll=1000
+#     ports: 
+#       - "${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}"
+#     environment:
+#       - PORT=${PAYMENTS_MS_PORT}
+#       - NATS_SERVERS=nats://nats-server:4222
+#       - STRIPE_SECRET=${STRIPE_SECRET}
+#       - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
+#       - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
+#       - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
