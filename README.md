@@ -44,3 +44,19 @@ Si se hace al revés, se perderán las referencias de los sub-módulos en el rep
 ```
 docker compose -f docker-compose.prod.yml build
 ```
+
+instala gcloud y haz en init con la config
+
+
+---
+tienes que ejecutar esto en auth
+docker build -f dockerfile.prod -t auth-ms .
+
+luego 
+docker build -f dockerfile.prod -t northamerica-south1-docker.pkg.dev/tienda-microservices-476518/image-registry/auth-ms .
+
+
+docker image push northamerica-south1-docker.pkg.dev/tienda-microservices-476518/image-registry/auth-ms
+---
+
+luego haz lo mismo con los demas
