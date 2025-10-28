@@ -39,19 +39,17 @@ services:
       - NATS_SERVERS=nats://nats-server:4222
       - DATABASE_URL=file:./dev.db
 
-#   orders-ms:
-#     depends_on:
-#       - orders-db
-#     build: ./orders-microservices
-#     volumes:
-#       - ./orders-microservices/src:/usr/src/app/src
-#       - ./orders-microservices/prisma:/usr/src/app/prisma
-#       - /usr/src/app/node_modules  # Evitar que se sobrescriban los node_modules
-#     command: pnpm run start:dev --watch --watchOptions.poll=1000
-#     environment:
-#       - PORT=3002
-#       - NATS_SERVERS=nats://nats-server:4222
-#       - DATABASE_URL=postgresql://postgres:123456@orders-db:5432/ordersdb
+  orders-ms:
+    build: 
+      context: ./orders-microservices
+      dockerfile: dockerfile.prod
+      args:
+        - ORDERS_DATABASE_URL=${ORDERS_DATABASE_URL}
+    image: orders-ms
+    environment:
+      - PORT=3002
+      - NATS_SERVERS=nats://nats-server:4222
+      - DATABASE_URL=${ORDERS_DATABASE_URL}
 
 # # ==============
 # Payments Microservice
