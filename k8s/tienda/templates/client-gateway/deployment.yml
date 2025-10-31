@@ -18,5 +18,10 @@ spec:
       containers:
       - image: northamerica-south1-docker.pkg.dev/tienda-microservices-476518/image-registry/client-gateway
         name: client-gateway
-        resources: {}
+        env:
+        - name: PORT
+          value: "3000"
+        - name: NATS_SERVER
+          value: "nats://nats"
+        resources: {} 
 status: {}
